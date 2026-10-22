@@ -1,0 +1,32 @@
+.net-bars { font-family: var(--st-font, sans-serif); color: var(--st-text-color, #17253c); }
+* { box-sizing: border-box; }
+.card { border: 1px solid color-mix(in srgb, currentColor 16%, transparent); border-radius: 16px; padding: 22px; background: var(--st-background-color, #fff); }
+.heading { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.mode-toggle[aria-pressed="true"] { background: color-mix(in srgb, #3b82b5 18%, transparent); border-color: #3b82b5; }
+.mode-toggle[aria-pressed="false"] { opacity: 1; text-decoration: none; }
+h3 { margin: 0; font-size: 19px; font-weight: 650; }
+.hint { opacity: .65; font-size: 13px; margin: 8px 0 20px; line-height: 1.5; }
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+button { color: inherit; background: transparent; font: inherit; border: 1px solid color-mix(in srgb, currentColor 22%, transparent); border-radius: 8px; padding: 7px 11px; cursor: pointer; font-size: 13px; }
+button:hover { background: color-mix(in srgb, currentColor 7%, transparent); }
+button:focus-visible, .bar:focus-visible { outline: 3px solid #568bf5; outline-offset: 3px; }
+button[aria-pressed="false"] { opacity: .5; text-decoration: line-through; }
+button:disabled { cursor: default; opacity: .4; }
+.swatch { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 7px; }
+.net-key { font-size: 13px; margin-left: 8px; }
+.net-key::before { content: ''; display: inline-block; width: 20px; border-top: 3px solid currentColor; vertical-align: middle; margin-right: 7px; }
+.plot-scroll { overflow-x: auto; }
+svg { width: 100%; display: block; overflow: visible; }
+svg text { fill: currentColor; font-size: 12px; }
+.grid { stroke: currentColor; opacity: .1; }
+.zero { stroke: currentColor; opacity: .4; }
+.bar { cursor: pointer; transition: opacity .12s; }
+.bar:hover { opacity: .7; }
+.net-line { stroke: currentColor; stroke-width: 3; fill: none; pointer-events: none; stroke-linejoin: round; stroke-linecap: round; }
+.net-dot { fill: var(--st-background-color, white); stroke: currentColor; stroke-width: 2.5; }
+.status { margin: 12px 0 0; font-size: 12px; opacity: .65; }
+.copy-feedback { margin: 8px 0 0; font-size: 13px; }
+.copy-feedback:empty { display: none; }
+.copy-feedback a { color: inherit; text-decoration: underline; }
+@media (max-width: 600px) { .card { padding: 14px; } .heading { align-items: flex-start; flex-direction: column; } }
