@@ -1,13 +1,32 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamlit-net-bars"
 version = "0.1.0"
 description = "Clickable diverging bars with a live net line for Streamlit"
+readme = "README.md"
+authors = [{name = "John Della Rosa"}]
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = ["streamlit>=1.51,<2"]
+keywords = ["streamlit", "component", "chart", "bar-plot", "cumulative-net"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+
+[project.urls]
+Repository = "https://github.com/johndellarosa/interactive-streamlit-bar-plot"
+Issues = "https://github.com/johndellarosa/interactive-streamlit-bar-plot/issues"
+
+[project.optional-dependencies]
+release = ["build>=1.2", "twine>=6"]
 
 [tool.setuptools.packages.find]
 include = ["streamlit_net_bars*"]

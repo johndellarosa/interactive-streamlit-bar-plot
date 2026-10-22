@@ -35,6 +35,8 @@ python -m venv .venv
 .venv\Scripts\python -m streamlit run app.py
 ```
 
+Once published on PyPI, install with `python -m pip install streamlit-net-bars`.
+
 ## Use the component
 
 ```python
@@ -80,3 +82,8 @@ Get-Content streamlit_net_bars/frontend/chart.js -Raw | node --input-type=module
 ```
 
 The demo uses illustrative monthly contributions, not real financial data.
+
+## Releases
+
+See [PUBLISHING.md](PUBLISHING.md) for the GitHub Actions Trusted Publishing
+setup and release procedure. Licensed under MIT; copyright John Della Rosa.
