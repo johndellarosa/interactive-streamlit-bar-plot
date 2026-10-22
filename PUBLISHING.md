@@ -1,6 +1,6 @@
-# Publishing streamlit-net-bars
+# Publishing interactive-streamlit-bar-plot
 
-Package: `streamlit-net-bars` · initial version: `0.1.0` · author: John Della Rosa · MIT.
+Package: `interactive-streamlit-bar-plot` · initial version: `0.1.0` · author: John Della Rosa · MIT.
 
 ## One-time account setup
 
@@ -11,7 +11,7 @@ Package: `streamlit-net-bars` · initial version: `0.1.0` · author: John Della 
 
    | Field | Value |
    | --- | --- |
-   | PyPI project name | `streamlit-net-bars` |
+   | PyPI project name | `interactive-streamlit-bar-plot` |
    | Owner | `johndellarosa` |
    | Repository name | `interactive-streamlit-bar-plot` |
    | Workflow name | `publish.yml` |
@@ -40,11 +40,11 @@ when the first upload occurs.
    The build job verifies the tag, runs tests, builds both distributions, and
    checks metadata and packaged assets. The publish job uploads those artifacts
    to PyPI. Approve the `pypi` environment deployment if configured.
-4. Confirm the version on [PyPI](https://pypi.org/project/streamlit-net-bars/),
+4. Confirm the version on [PyPI](https://pypi.org/project/interactive-streamlit-bar-plot/),
    then install in a fresh environment:
 
    ```powershell
-   python -m pip install streamlit-net-bars==0.1.0
+   python -m pip install interactive-streamlit-bar-plot==0.1.0
    ```
 
 The workflow only runs when a GitHub release is published. Ordinary commits and

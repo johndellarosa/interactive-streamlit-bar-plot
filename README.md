@@ -35,7 +35,7 @@ python -m venv .venv
 .venv\Scripts\python -m streamlit run app.py
 ```
 
-Once published on PyPI, install with `python -m pip install streamlit-net-bars`.
+Once published on PyPI, install with `python -m pip install interactive-streamlit-bar-plot`.
 
 ## Use the component
 

@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/streamlit-net-bars/
+      url: https://pypi.org/project/interactive-streamlit-bar-plot/
     permissions:
       id-token: write
     steps:
