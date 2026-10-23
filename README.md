@@ -9,7 +9,33 @@ per chart across Streamlit reruns for the current session.
 
 Positive values stack above the centered zero line; negative values stack below.
 The line is the signed sum of the **visible** series at each position. All hidden
-means a zero line. The symmetric y scale adjusts to the visible contributions.
+means a zero line. **Fixed axis** is enabled by default: the symmetric y scale
+stays unchanged when hiding, restoring, or undoing series visibility. Turn it
+off to fit the visible contributions and both net lines. Axis mode survives
+Streamlit reruns independently of visibility history. Changing the input data
+or switching cumulative mode recalculates the scale. In cumulative mode, the
+fixed scale reserves room for any subset of the original series so hiding
+negative contributions cannot clip the filtered line.
+
+Use **Interaction** to choose **Zoom X axis**, **Zoom Y axis**, or **Zoom both
+axes**, then drag a region of the plot to zoom into it. **Reset zoom** restores the full view; a
+double-click in a drag-zoom mode also resets it. Choose **Click bars** to resume
+hiding series directly, or use the legend while in zoom mode.
+
+Zoom survives visibility changes, Undo, and Streamlit reruns. The fixed-axis
+setting controls the unzoomed scale; an explicit y zoom takes precedence.
+Changing cumulative or fixed-axis mode resets y zoom but preserves x zoom.
+Changing the input data resets the zoom. Cumulative totals always include the
+preceding periods, even when x zoom hides them. Copied PNGs use the current
+zoomed view, without the drag-selection overlay.
+
+A dashed **Original net** line shows the signed sum of all input series, while
+the solid line shows the net of the currently visible series. The reference
+stays unchanged when hiding or restoring series and remains visible even when
+all bars are hidden. With every series visible, the two lines overlap. Both
+use running totals in cumulative mode, and the axis includes both lines.
+The reference is recalculated when the input data changes. Copy image and
+Download PNG include both lines and their legend keys.
 
 Toggle **Cumulative net** to show the running signed sum of the visible net
 values, starting at the first x position. For net values `[40, 50, -20]`, the
@@ -78,6 +104,7 @@ horizontally; long x labels are abbreviated in the plot and shown fully in toolt
 
 ```powershell
 python -m unittest discover -s tests -v
+node --test tests/test_axis.mjs
 Get-Content streamlit_net_bars/frontend/chart.js -Raw | node --input-type=module --check
 ```
 

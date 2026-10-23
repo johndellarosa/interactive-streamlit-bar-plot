@@ -3,4 +3,5 @@ include app.py
 include LICENSE
 include PUBLISHING.md
 recursive-include tests *.py
+recursive-include tests *.mjs
 recursive-include streamlit_net_bars/frontend *.js *.css

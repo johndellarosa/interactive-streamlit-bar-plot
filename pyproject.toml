@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "interactive-streamlit-bar-plot"
-version = "0.1.0"
+version = "0.2.0"
 description = "Clickable diverging bars with a live net line for Streamlit"
 readme = "README.md"
 authors = [{name = "John Della Rosa"}]

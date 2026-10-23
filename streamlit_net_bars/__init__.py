@@ -57,6 +57,8 @@ def net_bar_chart(
     state = st.session_state.get(key, {})
     hidden = [name for name in state.get("hidden", []) if name in names]
     cumulative = bool(state.get("cumulative", False))
+    fixed_axis = bool(state.get("fixed_axis", True))
+    viewport = state.get("viewport", {})
     # Historical snapshots refer to series identities, not their numeric data.
     history = [[name for name in snapshot if name in names]
                for snapshot in state.get("history", [])]
@@ -77,11 +79,15 @@ def net_bar_chart(
     result = _renderer(
         key=key,
         data={**data, "hidden": hidden, "history": history, "cumulative": cumulative,
+              "fixed_axis": fixed_axis, "viewport": viewport,
               "title": str(title), "height": height},
-        default={"hidden": hidden, "history": history, "cumulative": cumulative},
+        default={"hidden": hidden, "history": history, "cumulative": cumulative,
+                 "fixed_axis": fixed_axis, "viewport": viewport},
         on_history_change=lambda: None,
         on_hidden_change=on_change or (lambda: None),
         on_cumulative_change=on_change or (lambda: None),
+        on_fixed_axis_change=on_change or (lambda: None),
+        on_viewport_change=lambda: None,
     )
     hidden = [name for name in (result.hidden or []) if name in names]
     return NetBarResult(hidden, [n for n in names if n not in hidden],
