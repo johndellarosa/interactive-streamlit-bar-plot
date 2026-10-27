@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "interactive-streamlit-bar-plot"
-version = "0.2.0"
+version = "0.3.0"
 description = "Streamlit Interactive Charts: net bars, Marimekko, horizon, paired-change and UpSet plots"
 readme = "README.md"
 authors = [{name = "John Della Rosa"}]
@@ -12,7 +12,7 @@ license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = ["streamlit>=1.51,<2"]
-keywords = ["streamlit", "component", "interactive-charts", "visualization", "upset", "marimekko", "horizon"]
+keywords = ["streamlit", "component", "interactive-charts", "visualization", "upset", "marimekko", "horizon","rainfall"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
