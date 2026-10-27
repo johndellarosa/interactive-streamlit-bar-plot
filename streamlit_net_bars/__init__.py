@@ -5,6 +5,8 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from hashlib import sha256
 
+from .style import extract_style
+from .appearance import prepare_appearance, appearance_assets
 from .model import cumulative_values, net_values, prepare_data
 
 __all__ = ["net_bar_chart", "NetBarResult"]
@@ -35,6 +37,7 @@ def net_bar_chart(
     title: str = "Contributions & net",
     height: int = 460,
     on_change: Callable | None = None,
+    **appearance,
 ) -> NetBarResult:
     """Render diverging stacked bars. Click any segment to hide its series.
 
@@ -62,9 +65,12 @@ def net_bar_chart(
     # Historical snapshots refer to series identities, not their numeric data.
     history = [[name for name in snapshot if name in names]
                for snapshot in state.get("history", [])]
+    plot_style = extract_style('chart', appearance, names)
+    appearance = prepare_appearance(appearance)
     assets = Path(__file__).parent / "frontend"
     css = (assets / "chart.css").read_text(encoding="utf-8")
     js = (assets / "chart.js").read_text(encoding="utf-8")
+    js, css = appearance_assets(js, css)
     asset_version = sha256((css + "\0" + js).encode("utf-8")).hexdigest()[:16]
     # Imported modules persist between reruns. Refresh the renderer when assets
     # change, and version its identity so clients fetch the new definition.
@@ -80,7 +86,7 @@ def net_bar_chart(
         key=key,
         data={**data, "hidden": hidden, "history": history, "cumulative": cumulative,
               "fixed_axis": fixed_axis, "viewport": viewport,
-              "title": str(title), "height": height},
+              "title": str(title), "height": height, "appearance": appearance, "plot_style": plot_style},
         default={"hidden": hidden, "history": history, "cumulative": cumulative,
                  "fixed_axis": fixed_axis, "viewport": viewport},
         on_history_change=lambda: None,

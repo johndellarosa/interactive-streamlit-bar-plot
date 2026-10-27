@@ -5,14 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "interactive-streamlit-bar-plot"
 version = "0.2.0"
-description = "Clickable diverging bars with a live net line for Streamlit"
+description = "Streamlit Interactive Charts: net bars, Marimekko, horizon, paired-change and UpSet plots"
 readme = "README.md"
 authors = [{name = "John Della Rosa"}]
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = ["streamlit>=1.51,<2"]
-keywords = ["streamlit", "component", "chart", "bar-plot", "cumulative-net"]
+keywords = ["streamlit", "component", "interactive-charts", "visualization", "upset", "marimekko", "horizon"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
@@ -29,7 +29,7 @@ Issues = "https://github.com/johndellarosa/interactive-streamlit-bar-plot/issues
 release = ["build>=1.2", "twine>=6"]
 
 [tool.setuptools.packages.find]
-include = ["streamlit_net_bars*"]
+include = ["streamlit_interactive_charts*", "streamlit_net_bars*"]
 
 [tool.setuptools.package-data]
 streamlit_net_bars = ["frontend/*.js", "frontend/*.css"]

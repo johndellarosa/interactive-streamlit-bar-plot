@@ -4,7 +4,7 @@ export function axisExtent(series, hidden, cumulative, fixedAxis) {
   const visible = series.filter(s => !hidden.has(s.name));
   const scaleSeries = fixedAxis ? series : visible;
   const prefixes = series.map(() => 0);
-  let originalRunning = 0, filteredRunning = 0, extent = 1;
+  let originalRunning = 0, filteredRunning = 0, extent = 0;
   for (let i = 0; i < series[0].values.length; i++) {
     const positive = scaleSeries.reduce((sum, s) => sum + Math.max(0, s.values[i]), 0);
     const negative = scaleSeries.reduce((sum, s) => sum + Math.min(0, s.values[i]), 0);
@@ -22,13 +22,28 @@ export function axisExtent(series, hidden, cumulative, fixedAxis) {
         -prefixes.reduce((sum, value) => sum + Math.min(0, value), 0));
     }
   }
-  return extent * 1.12;
+  // Only an entirely zero-valued plot needs an arbitrary nonzero domain.
+  return extent > 0 ? extent * 1.12 : 1;
+}
+
+export function formatValue(value, tickStep = null) {
+  const magnitude = Math.abs(value);
+  if (value === 0 || (tickStep > 0 && magnitude < tickStep * 1e-10)) return '0';
+  // Derive precision from the distance between ticks, including zoomed views
+  // with a small span around a large offset. Tooltips retain six significant digits.
+  const precision = tickStep > 0 ? Math.min(15, Math.max(6,
+    Math.ceil(Math.log10(magnitude) - Math.log10(tickStep)) + 2)) : 6;
+  return new Intl.NumberFormat(undefined, {
+    maximumSignificantDigits: precision,
+    notation: magnitude < 1e-4 || magnitude >= 1e7 ? 'scientific' : 'standard',
+  }).format(value).replace('E', 'e');
 }
 
 export default function(component) {
   const {parentElement, data, setStateValue} = component;
   const root = parentElement.querySelector('.net-bars');
-  const colors = ['#3b82b5', '#55b6a4', '#9c86cf', '#ed9b55', '#dc7081', '#a39567', '#6a97d6', '#b76bad'];
+  const style=data.plot_style || {};
+  const colors = ['#4b80b6', '#56a69a', '#a092bc', '#d8a06a', '#c77e88', '#aaa075', '#7598bd', '#b58eae'];
   let hidden = new Set(data.hidden);
   let cumulative = Boolean(data.cumulative);
   let fixedAxis = data.fixed_axis !== false;
@@ -59,7 +74,7 @@ export default function(component) {
     if (text !== undefined) node.textContent = text;
     return node;
   };
-  const fmt = value => new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, notation: Math.abs(value) >= 10000 ? 'compact' : 'standard'}).format(value);
+  const fmt = value => formatValue(value);
   function toggle(name) {
     history.push([...hidden]);
     if (hidden.has(name)) hidden.delete(name); else hidden.add(name);
@@ -68,10 +83,13 @@ export default function(component) {
   function draw() {
     root.replaceChildren();
     const card = make('div', {class: 'card'});
+    root.append(card);
     const heading = make('div', {class: 'heading'});
-    heading.append(make('h3', {}, data.title));
+    const titleBlock = make('div', {class: 'title-block'});
+    titleBlock.append(make('p', {class: 'eyebrow'}, 'Contribution analysis'), make('h3', {}, data.title));
+    heading.append(titleBlock);
     const actions = make('div', {class: 'actions'});
-    const copy = make('button', {type: 'button', title: 'Copy the current chart as a PNG image'}, 'Copy image');
+    const copy = make('button', {type: 'button', class: 'copy-button', title: 'Copy the current chart as a PNG image'}, 'Copy image');
     const copyFeedback = make('p', {class: 'copy-feedback', 'aria-live': 'polite'});
     function offerDownload(blob) {
       const download = make('a', {href: '#'}, 'Download PNG');
@@ -111,7 +129,7 @@ export default function(component) {
         copy.disabled = false;
       }
     };
-    const mode = make('button', {type: 'button', 'aria-pressed': String(cumulative),
+    const mode = make('button', {type: 'button', 'aria-label': 'Cumulative net', 'aria-pressed': String(cumulative),
       class: 'mode-toggle', title: 'Show a running total in x-axis order'}, 'Cumulative net');
     mode.onclick = () => {
       cumulative = !cumulative;
@@ -121,7 +139,7 @@ export default function(component) {
       setStateValue('cumulative', cumulative);
       root.querySelector('.mode-toggle')?.focus();
     };
-    const axis = make('button', {type: 'button', 'aria-pressed': String(fixedAxis),
+    const axis = make('button', {type: 'button', 'aria-label': 'Fixed axis', 'aria-pressed': String(fixedAxis),
       class: 'axis-toggle', title: 'Keep the original scale when hiding series'}, 'Fixed axis');
     axis.onclick = () => {
       fixedAxis = !fixedAxis;
@@ -155,7 +173,7 @@ export default function(component) {
     data.series.forEach((s, j) => {
       const button = make('button', {type: 'button', 'aria-pressed': String(!hidden.has(s.name)), 'aria-label': `${hidden.has(s.name) ? 'Show' : 'Hide'} ${s.name}`});
       const swatch = make('span', {class: 'swatch'});
-      swatch.style.background = colors[j % colors.length];
+      swatch.style.background = (style.colors?.[s.name] || colors[j % colors.length]);
       button.append(swatch, document.createTextNode(s.name));
       button.onclick = () => toggle(s.name);
       legend.append(button);
@@ -186,9 +204,19 @@ export default function(component) {
     zoomControls.append(make('span', {class:'zoom-hint'}, viewport.mode && viewport.mode !== 'inspect' ?
       'Drag a region to zoom. Double-click the plot to reset.' : 'Choose a zoom interaction to drag a region.'));
     card.append(zoomControls);
-    const width = Math.max(600, Math.ceil(xDomain[1]-xDomain[0]) * 65);
+    // Fit every category into the container instead of assigning a minimum
+    // number of pixels per category and forcing horizontal scrolling.
+    const cardStyle = getComputedStyle(card);
+    const width = Math.max(180, card.clientWidth - parseFloat(cardStyle.paddingLeft) - parseFloat(cardStyle.paddingRight));
     const height = data.height;
-    const left = 70, right = 28, top = 28, bottom = 54;
+    const tickStep = (yDomain[1]-yDomain[0])/4;
+    const ticks = Array.from({length:5}, (_,i) => {
+      const value = yDomain[0]+tickStep*i;
+      return Math.abs(value) < tickStep * 1e-10 ? 0 : value;
+    });
+    const tickLabels = ticks.map(value => formatValue(value, tickStep));
+    const left = (data.appearance?.ylabel ? 28 : 0) + Math.max(70, Math.min(150, Math.max(...tickLabels.map(label=>label.length))*(data.appearance?.tick_fontsize || 12)*.6+14));
+    const right = 28, top = 28, bottom = 54 + (data.appearance?.xlabel ? 24 : 0);
     const plotW = width - left - right, plotH = height - top - bottom;
     const visible = data.series.filter(s => !hidden.has(s.name));
     const net = data.x.map((_,i) => visible.reduce((sum,s) => sum + s.values[i], 0));
@@ -204,7 +232,9 @@ export default function(component) {
     const step = plotW / (xDomain[1]-xDomain[0]);
     const x = i => left + step * (i-xDomain[0]);
     const svg = shape('svg', {viewBox: `0 0 ${width} ${height}`, role: 'group', 'aria-label': data.title});
-    svg.style.minWidth = `${width}px`;
+    svg.setAttribute('height', String(height));
+    addAxisTitles(svg,data,width,height);
+
     svg.append(shape('title', {}, 'Interactive contributions and net. Bar segments are buttons; press Enter or Space to hide a series.'));
     const defs = shape('defs');
     const clip = shape('clipPath', {id:clipId});
@@ -212,11 +242,10 @@ export default function(component) {
     defs.append(clip);
     svg.append(defs);
     const marks = shape('g', {'clip-path':`url(#${clipId})`});
-    for (let tick = 0; tick <= 4; tick++) {
-      const value = yDomain[0]+(yDomain[1]-yDomain[0])*tick/4;
-      svg.append(shape('line', {x1: left, x2: width-right, y1: y(value), y2: y(value), class: tick === 0 ? 'zero' : 'grid'}));
-      svg.append(shape('text', {x: left-10, y: y(value)+4, 'text-anchor': 'end'}, fmt(value)));
-    }
+    ticks.forEach((value,i) => {
+      svg.append(shape('line', {x1: left, x2: width-right, y1: y(value), y2: y(value), class: value === 0 ? 'zero' : 'grid'}));
+      svg.append(shape('text', {class:'tick-label', x: left-10, y: y(value)+4, 'text-anchor': 'end'}, tickLabels[i]));
+    });
     const positive = data.x.map(() => 0), negative = data.x.map(() => 0);
     data.series.forEach((s,j) => {
       if (hidden.has(s.name)) return;
@@ -226,7 +255,8 @@ export default function(component) {
         stack[i] += value;
         if (value === 0) return;
         const label = `${s.name}, ${data.x[i]}: ${fmt(value)}. Click to hide ${s.name}.`;
-        const rect = shape('rect', {x: x(i)-step*.31, y: y(Math.max(from,stack[i])), width: step*.62, height: Math.abs(y(from)-y(stack[i])), fill: colors[j % colors.length], class: 'bar', tabindex: 0, role: 'button', 'aria-label': label});
+        const barWidth = (style.bar_width===undefined?Math.min(24, step * .38):step*style.bar_width);
+        const rect = shape('rect', {x: x(i)-barWidth/2, y: y(Math.max(from,stack[i])), width: barWidth, height: Math.abs(y(from)-y(stack[i])), rx: 1.2, fill: (style.colors?.[s.name] || colors[j % colors.length]), class: 'bar', tabindex: 0, role: 'button', 'aria-label': label});
         rect.append(shape('title', {}, label));
         rect.onclick = () => { toggle(s.name); focusLegend(s.name); };
         rect.onkeydown = e => {if (e.key === 'Enter' || e.key === ' ') {e.preventDefault(); toggle(s.name); focusLegend(s.name);}};
@@ -235,18 +265,23 @@ export default function(component) {
     });
     marks.append(shape('polyline', {points: originalLine.map((v,i) => `${x(i)},${y(v)}`).join(' '), class: 'original-line'}));
     originalLine.forEach((v,i) => {
-      const dot = shape('circle', {cx: x(i), cy: y(v), r: 3, class: 'original-dot', tabindex: 0,
+      const dot = shape('circle', {cx: x(i), cy: y(v), r: style.point_size??2.2, class: 'original-dot', tabindex: 0,
         'aria-label': `${data.x[i]} ${originalLabel.toLowerCase()}: ${fmt(v)}`});
       dot.append(shape('title', {}, `${data.x[i]} · ${originalLabel}: ${fmt(v)}`));
       marks.append(dot);
     });
     marks.append(shape('polyline', {points: line.map((v,i) => `${x(i)},${y(v)}`).join(' '), class: 'net-line'}));
+    const visibleIndices = data.x.map((_, i) => i).filter(i => x(i) >= left && x(i) <= width-right);
+    const visibleRanks = new Map(visibleIndices.map((index, rank) => [index, rank]));
+    const labelStride = Math.max(1, Math.ceil(visibleIndices.length / Math.max(2, Math.floor(plotW / 65))));
     line.forEach((v,i) => {
-      const dot = shape('circle', {cx: x(i), cy: y(v), r: 4, class: 'net-dot', tabindex: 0, 'aria-label': `${data.x[i]} ${lineLabel.toLowerCase()}: ${fmt(v)}`});
+      const dot = shape('circle', {cx: x(i), cy: y(v), r: style.point_size??2.8, class: 'net-dot', tabindex: 0, 'aria-label': `${data.x[i]} ${lineLabel.toLowerCase()}: ${fmt(v)}`});
       dot.append(shape('title', {}, `${data.x[i]} · ${lineLabel}: ${fmt(v)}`));
       marks.append(dot);
-      if (x(i) >= left && x(i) <= width-right) {
-        svg.append(shape('text', {x: x(i), y: height-20, 'text-anchor': 'middle'}, data.x[i].length > 12 ? data.x[i].slice(0,11)+'…' : data.x[i]));
+      const labelIndex = visibleRanks.get(i) ?? -1;
+      if (labelIndex >= 0 && (labelIndex % labelStride === 0 ||
+          (labelIndex === visibleIndices.length-1 && labelIndex % labelStride >= labelStride / 2))) {
+        svg.append(shape('text', {class:'tick-label', x: x(i), y: height-20-(data.appearance?.xlabel?24:0), 'text-anchor': 'middle'}, data.x[i].length > 12 ? data.x[i].slice(0,11)+'…' : data.x[i]));
       }
     });
     svg.append(marks);
@@ -338,9 +373,9 @@ export default function(component) {
     let legendX = 24, legendY = 62;
     const measurement = document.createElement('canvas').getContext('2d');
     measurement.font = '13px Arial';
-    const entries = data.series.map((s,i) => ({label: s.name, color: colors[i % colors.length], hidden: hidden.has(s.name)}))
+    const entries = data.series.map((s,i) => ({label: s.name, color: (style.colors?.[s.name] || colors[i % colors.length]), hidden: hidden.has(s.name)}))
       .filter(s => !s.hidden);
-    entries.push({label: lineLabel, color: textColor, line: true});
+    entries.push({label: lineLabel, color: getComputedStyle(svg.querySelector('.net-line')).stroke, line: true});
     entries.push({label: cumulative ? 'Original cumulative net' : 'Original net',
       color: getComputedStyle(svg.querySelector('.original-line')).stroke, line: true, dashed: true});
     entries.forEach(entry => {
@@ -395,4 +430,14 @@ export default function(component) {
     buttons[index]?.focus();
   }
   draw();
+  let lastWidth = root.clientWidth;
+  let resizeFrame;
+  const observer = new ResizeObserver(() => {
+    if (Math.abs(root.clientWidth-lastWidth) < 1) return;
+    lastWidth = root.clientWidth;
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(draw);
+  });
+  observer.observe(root);
+  return () => {observer.disconnect(); cancelAnimationFrame(resizeFrame);};
 }

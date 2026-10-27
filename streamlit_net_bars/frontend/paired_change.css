@@ -1,0 +1,51 @@
+.paired-change { font-family:var(--st-font,system-ui,sans-serif); color:var(--st-text-color,#243247); --border:color-mix(in srgb,currentColor 12%,transparent); --muted:color-mix(in srgb,currentColor 68%,transparent); --soft:color-mix(in srgb,currentColor 3%,transparent); }
+* { box-sizing:border-box; }
+.paired-card { position:relative; padding:26px 28px 18px; border:1px solid var(--border); border-radius:14px; background:var(--st-background-color,white); box-shadow:0 8px 30px rgb(15 23 42 / 4%); }
+.heading { display:flex; justify-content:space-between; align-items:center; gap:16px; }
+.eyebrow { margin:0 0 5px; color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.13em; font-weight:650; }
+h3 { margin:0; font-size:20px; font-weight:650; letter-spacing:-.02em; }
+.intro { margin:12px 0 18px; font-size:12px; color:var(--muted); line-height:1.6; }
+button,select { color:inherit; font:inherit; font-size:12px; padding:7px 10px; min-height:32px; border:1px solid var(--border); border-radius:7px; background:var(--st-background-color,white); }
+button { cursor:pointer; } button:hover:not(:disabled) { background:var(--soft); } button:disabled { opacity:.35; cursor:default; }
+button:focus-visible,select:focus-visible,g[role="button"]:focus-visible { outline:2px solid #5995dc; outline-offset:3px; }
+.groups,.controls,.selection,.legend { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.groups button { background:var(--soft); border-color:transparent; }
+.groups button[aria-pressed="false"] { text-decoration:line-through; opacity:.45; border-color:var(--border); background:transparent; }
+.swatch { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:7px; }
+.controls { margin-top:18px; border-top:1px solid var(--border); padding-top:15px; gap:14px; align-items:end; }
+.controls label { display:flex; flex-direction:column; gap:5px; font-size:11px; color:var(--muted); }
+.controls select { color:var(--st-text-color,#243247); }
+.stats { display:flex; flex-wrap:wrap; gap:32px; margin:20px 0; }
+.stats span { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
+.stats strong { font-size:23px; font-weight:600; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
+.selection { font-size:12px; color:var(--muted); padding:10px 12px; border-radius:8px; background:var(--soft); }
+.selection>span { margin-right:auto; }
+.legend { margin:17px 0; gap:14px; font-size:11px; }
+.legend>span { display:inline-flex; align-items:center; gap:6px; }
+.legend i { display:inline-block; width:7px; height:7px; border-radius:50%; }
+.legend-note { color:var(--muted); margin-left:auto; }
+.plot { width:100%; overflow:hidden; } svg { display:block; width:100%; }
+.panel-title { fill:currentColor; font-size:12px; font-weight:600; }
+.axis-label,.bin-count { fill:var(--muted); font-size:10px; font-variant-numeric:tabular-nums; }
+.axis-title { fill:currentColor; font-size:12px; font-weight:550; }
+.grid,.guide { stroke:currentColor; opacity:.07; }
+.zero { stroke:currentColor; opacity:.3; }
+.pair { cursor:pointer; }
+.pair-line { stroke-width:1.2; opacity:.5; }
+.pair-dot { stroke:var(--st-background-color,white); stroke-width:1; }
+.pair.dimmed { opacity:.13; }
+.pair.selected .pair-line,.pair.is-hovered .pair-line { opacity:1; stroke-width:2.5; }
+.pair.is-hovered { opacity:1; }
+.pair.selected .pair-dot,.pair.is-hovered .pair-dot { stroke:currentColor; stroke-width:1.5; }
+.hist-bin { cursor:pointer; }
+.hist-bar { fill:#7c9db7; fill-opacity:.55; }
+.hist-selected { fill:#3267a8; fill-opacity:.8; }
+.hist-bin:hover .hist-bar { fill-opacity:.85; }
+.mean-line { stroke:currentColor; stroke-width:1.2; stroke-dasharray:5 4; opacity:.6; pointer-events:none; }
+.tooltip { position:absolute; z-index:3; width:245px; max-width:calc(100% - 16px); padding:13px 15px; background:var(--st-background-color,white); border:1px solid var(--border); border-radius:9px; box-shadow:0 5px 20px rgb(15 23 42 / 12%); pointer-events:none; font-size:12px; }
+.tooltip strong { display:block; margin-bottom:9px; }
+.tooltip-row { display:flex; justify-content:space-between; gap:12px; margin:5px 0; }
+.tooltip-row span { color:var(--muted); }
+.footnote { margin:10px 0 0; padding-top:13px; border-top:1px solid var(--border); color:var(--muted); font-size:11px; line-height:1.6; }
+.empty { padding:18px; background:var(--soft); border-radius:7px; font-size:13px; }
+@media(max-width:600px) { .paired-card { padding:18px 14px; } .stats { gap:20px; } .legend-note { margin-left:0; } }

@@ -1,5 +1,10 @@
 include README.md
 include app.py
+include marimekko_app.py
+include horizon_app.py
+include paired_change_app.py
+include upset_app.py
+include raincloud_app.py
 include LICENSE
 include PUBLISHING.md
 recursive-include tests *.py

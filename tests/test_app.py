@@ -49,6 +49,10 @@ class AppTests(unittest.TestCase):
         at = AppTest.from_file(APP).run(timeout=30)
         self.assertFalse(at.exception)
         self.assertEqual(at.metric[1].value, "4 / 4")
+        table = at.dataframe[0].value
+        self.assertEqual(len(table), 36)
+        self.assertEqual(table["Month"].iloc[0], "Jan 2024")
+        self.assertEqual(table["Month"].iloc[-1], "Dec 2026")
         original_net = float(at.metric[0].value.replace(",", ""))
         at.session_state["contributions"]["hidden"] = ["Operating costs"]
         at.run()
