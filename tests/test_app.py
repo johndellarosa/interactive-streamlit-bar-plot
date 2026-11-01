@@ -16,7 +16,7 @@ class AppTests(unittest.TestCase):
         renderer = lambda **kwargs: SimpleNamespace(hidden=[], cumulative=False)
         with patch.object(chart, "_renderer", None), patch.object(chart, "_renderer_assets", None), \
              patch.object(st.components.v2, "component", return_value=renderer) as register, \
-             patch.object(Path, "read_text", side_effect=["css", "old js", "css", "new js", "css", "new js"]):
+             patch.object(Path, "read_text", side_effect=["css", "old js", "axis helpers", "css", "new js", "axis helpers", "css", "new js", "axis helpers"]):
             chart.net_bar_chart(["Jan"], {"A": [1]}, key="asset_test")
             first_name = register.call_args.args[0]
             chart.net_bar_chart(["Jan"], {"A": [1]}, key="asset_test")

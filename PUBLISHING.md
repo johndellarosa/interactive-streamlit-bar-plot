@@ -1,6 +1,6 @@
 # Publishing interactive-streamlit-bar-plot
 
-Package: `interactive-streamlit-bar-plot` · initial version: `0.1.0` · author: John Della Rosa · MIT.
+Package: `interactive-streamlit-bar-plot` · prepared version: `0.5.0` · author: John Della Rosa · MIT.
 
 ## One-time account setup
 
@@ -29,22 +29,32 @@ credentials. No PyPI password or API token is stored in GitHub.
 Pending publishers do not reserve package names; PyPI checks name availability
 when the first upload occurs.
 
-## Publish the first release
+## Publish a release
 
-1. Commit and push the project, including `.github/workflows/publish.yml`, to
+1. Confirm `project.version` in `pyproject.toml` is an unused PyPI version.
+   The current prepared version is `0.5.0`, so its release tag is `v0.5.0`.
+   Update the README chart catalog and run the local checks below.
+2. Commit and push the project, including all new chart modules, frontend assets,
+   demos, tests and `.github/workflows/publish.yml`, to
    `johndellarosa/interactive-streamlit-bar-plot`.
-2. Open [Create a GitHub release](https://github.com/johndellarosa/interactive-streamlit-bar-plot/releases/new).
-   Create tag `v0.1.0` against the commit containing this package and workflow.
+3. Open [Create a GitHub release](https://github.com/johndellarosa/interactive-streamlit-bar-plot/releases/new).
+   Create tag `v0.5.0` against the commit containing this package and workflow.
    Add a release title and notes, then publish the release.
-3. Watch [GitHub Actions](https://github.com/johndellarosa/interactive-streamlit-bar-plot/actions/workflows/publish.yml).
+4. Watch [GitHub Actions](https://github.com/johndellarosa/interactive-streamlit-bar-plot/actions/workflows/publish.yml).
    The build job verifies the tag, runs tests, builds both distributions, and
    checks metadata and packaged assets. The publish job uploads those artifacts
    to PyPI. Approve the `pypi` environment deployment if configured.
-4. Confirm the version on [PyPI](https://pypi.org/project/interactive-streamlit-bar-plot/),
+5. Confirm the version on [PyPI](https://pypi.org/project/interactive-streamlit-bar-plot/),
    then install in a fresh environment:
 
    ```powershell
-   python -m pip install interactive-streamlit-bar-plot==0.1.0
+   python -m pip install interactive-streamlit-bar-plot==0.4.0
+   ```
+
+   Verify the new public imports, for example:
+
+   ```shell
+   python -c "from streamlit_interactive_charts import waterfall_chart, bullet_chart, sequence_chart, ridgeline_chart"
    ```
 
 The workflow only runs when a GitHub release is published. Ordinary commits and
@@ -56,9 +66,18 @@ correct them and rerun the failed publish job.
 ```powershell
 .venv\Scripts\python -m pip install -e '.[release]'
 .venv\Scripts\python -m unittest discover -s tests -v
-.venv\Scripts\python -m build
-.venv\Scripts\python -m twine check --strict dist/*
+node --test tests/*.mjs
+.venv\Scripts\python -m build --outdir dist/0.5.0
+.venv\Scripts\python -m twine check --strict dist/0.5.0/*
 ```
+
+Use a fresh output directory for each version so old artifacts are not included
+in the local checks. The wheel must include both import namespaces, all fourteen
+chart implementations, frontend JavaScript/CSS (including the shared axis and
+distribution helpers), and the MIT license. The source archive also includes
+the demo scripts and tests. CI checks the bundled assets before publishing.
+The README is used as the PyPI project description; `twine check --strict`
+validates its metadata and rendering markup.
 
 Before later releases, increment `project.version` in `pyproject.toml` and create
 the matching `v<version>` release tag. PyPI does not allow replacing an uploaded

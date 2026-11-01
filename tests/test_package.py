@@ -7,7 +7,7 @@ class PackageTests(unittest.TestCase):
         import streamlit_interactive_charts as charts
         for module, function in [('net_bars', 'net_bar_chart'), ('marimekko', 'marimekko_chart'),
                                  ('horizon', 'horizon_chart'), ('paired_change', 'paired_change_chart'),
-                                 ('upset', 'upset_chart'), ('raincloud', 'raincloud_chart')]:
+                                 ('upset', 'upset_chart'), ('raincloud', 'raincloud_chart'), ('bump', 'bump_chart'), ('lasagna', 'lasagna_chart'), ('box', 'box_plot'), ('histogram', 'histogram_chart'), ('waterfall', 'waterfall_chart'), ('bullet', 'bullet_chart'), ('sequence', 'sequence_chart'), ('ridgeline', 'ridgeline_chart')]:
             legacy = importlib.import_module('streamlit_net_bars' + ('' if module == 'net_bars' else '.'+module))
             modern = importlib.import_module('streamlit_interactive_charts.'+module)
             self.assertIs(getattr(charts, function), getattr(legacy, function))

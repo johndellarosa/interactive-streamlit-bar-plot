@@ -50,11 +50,11 @@ export default function(component) {
     const height=matrixTop+data.names.length*rowHeight+42+(data.appearance?.xlabel?24:0);
     const chart=svgEl('svg',{width,height,viewBox:`0 0 ${width} ${height}`,role:'group','aria-label':data.title});scroller.append(chart);
     addAxisTitles(chart,data,width,height);
-    const peak=Math.max(...data.intersections.map(r=>r.count),1),barH=barBottom-top;
+    const axis=niceAxis(0,Math.max(...data.intersections.map(r=>r.count),1),5,true,1),peak=axis.domain[1],barH=barBottom-top;
     chart.append(svgEl('text',{x:left,y:18,class:'panel-title'},'Exact intersection size'));
     chart.append(svgEl('text',{x:left-18,y:barBottom+22,'text-anchor':'end',class:'panel-title'},'Set size (all records)'));
-    for(let i=0;i<=4;i++){
-      const value=peak*i/4,y=barBottom-value/peak*barH;
+    for(const value of axis.ticks){
+      const y=barBottom-value/peak*barH;
       chart.append(svgEl('line',{x1:left,x2:width-right,y1:y,y2:y,class:'grid'}));
       chart.append(svgEl('text',{x:left-9,y:y+4,'text-anchor':'end',class:'axis-label'},new Intl.NumberFormat(undefined,{maximumFractionDigits:1}).format(value)));
     }

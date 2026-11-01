@@ -115,7 +115,7 @@ def raincloud_chart(groups: Mapping, *, key: str, ids: Mapping | None = None,
              'points': saved.get('points', show_points) if saved.get('points_default', show_points) == show_points else show_points,
              'points_default': show_points}
     assets = Path(__file__).parent/'frontend'
-    js, css = appearance_assets((assets/'raincloud.js').read_text(encoding='utf-8'),
+    js, css = appearance_assets((assets/'distribution.js').read_text(encoding='utf-8') + (assets/'raincloud.js').read_text(encoding='utf-8'),
                                 (assets/'raincloud.css').read_text(encoding='utf-8'))
     version = sha256((js+'\0'+css).encode()).hexdigest()[:16]
     if _renderer is None or _asset_version != version:

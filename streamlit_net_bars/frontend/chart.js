@@ -196,7 +196,9 @@ export default function(component) {
     const fullX = [-.5, data.x.length-.5];
     const xDomain = viewport.x || fullX;
     const extent = axisExtent(data.series, hidden, cumulative, fixedAxis);
-    const yDomain = viewport.y || [-extent, extent];
+    // Explicit drag zoom keeps its bounds; automatic domains expand to nice ticks.
+    const yAxis = niceAxis(...(viewport.y || [-extent, extent]),5,!viewport.y);
+    const yDomain = yAxis.domain;
     const resetZoom = make('button', {type:'button'}, 'Reset zoom');
     resetZoom.disabled = !viewport.x && !viewport.y;
     resetZoom.onclick = () => {viewport.x = null; viewport.y = null; saveView();};
@@ -209,11 +211,8 @@ export default function(component) {
     const cardStyle = getComputedStyle(card);
     const width = Math.max(180, card.clientWidth - parseFloat(cardStyle.paddingLeft) - parseFloat(cardStyle.paddingRight));
     const height = data.height;
-    const tickStep = (yDomain[1]-yDomain[0])/4;
-    const ticks = Array.from({length:5}, (_,i) => {
-      const value = yDomain[0]+tickStep*i;
-      return Math.abs(value) < tickStep * 1e-10 ? 0 : value;
-    });
+    const tickStep = yAxis.step;
+    const ticks = yAxis.ticks;
     const tickLabels = ticks.map(value => formatValue(value, tickStep));
     const left = (data.appearance?.ylabel ? 28 : 0) + Math.max(70, Math.min(150, Math.max(...tickLabels.map(label=>label.length))*(data.appearance?.tick_fontsize || 12)*.6+14));
     const right = 28, top = 28, bottom = 54 + (data.appearance?.xlabel ? 24 : 0);

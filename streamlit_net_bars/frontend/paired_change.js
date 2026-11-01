@@ -108,11 +108,11 @@ export default function(component) {
     };
     const first={x:0,y:0},second={x:sideBySide?panelW+gap:0,y:sideBySide?0:panelHeight+30};
     const geometry=(origin,domain,title)=>{
+      const axis=niceAxis(...domain);domain=axis.domain;
       const left=origin.x+65+(data.appearance?.ylabel?24:0),right=origin.x+panelW-18,top=origin.y+36,bottom=origin.y+panelHeight-44-(data.appearance?.xlabel?24:0);
       const y=v=>bottom-(v-domain[0])/(domain[1]-domain[0])*(bottom-top);
       chart.append(shape('text',{x:origin.x+8,y:origin.y+16,class:'panel-title'},title));
-      for(let i=0;i<=4;i++){
-        let value=domain[0]+(domain[1]-domain[0])*i/4;if(Math.abs(value)<(domain[1]-domain[0])*1e-12)value=0;
+      for(const value of axis.ticks){
         chart.append(shape('line',{x1:left,x2:right,y1:y(value),y2:y(value),class:'grid'}));
         chart.append(shape('text',{x:left-9,y:y(value)+4,'text-anchor':'end',class:'axis-label'},format(value)));
       }

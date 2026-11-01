@@ -5,6 +5,14 @@ include horizon_app.py
 include paired_change_app.py
 include upset_app.py
 include raincloud_app.py
+include bump_app.py
+include lasagna_app.py
+include box_app.py
+include histogram_app.py
+include waterfall_app.py
+include bullet_app.py
+include sequence_app.py
+include ridgeline_app.py
 include LICENSE
 include PUBLISHING.md
 recursive-include tests *.py

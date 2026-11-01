@@ -1,7 +1,7 @@
 import {readFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import test from 'node:test';
-const source=await readFile(new URL('../streamlit_net_bars/frontend/raincloud.js',import.meta.url),'utf8');
+const source=await readFile(new URL('../streamlit_net_bars/frontend/distribution.js',import.meta.url),'utf8')+await readFile(new URL('../streamlit_net_bars/frontend/raincloud.js',import.meta.url),'utf8');
 const {quantile,distribution,density,raincloudModel}=await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
 test('quartiles interpolate and Tukey whiskers exclude distant outliers',()=>{
   assert.equal(quantile([1,2,3,4],.25),1.75);

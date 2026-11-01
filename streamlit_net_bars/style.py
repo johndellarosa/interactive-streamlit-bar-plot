@@ -4,6 +4,7 @@ from math import isfinite
 import re
 
 OPTIONS = {
+    'bump': {'colors', 'line_width', 'line_opacity', 'point_size', 'show_points', 'show_end_labels'},
     'chart': {'colors', 'bar_width', 'bar_opacity', 'line_width', 'point_size', 'net_color', 'reference_color', 'show_points'},
     'marimekko': {'colors', 'segment_opacity', 'segment_border_width', 'segment_border_color', 'show_segment_labels'},
     'horizon': {'positive_colors', 'negative_colors', 'band_opacity', 'line_width'},

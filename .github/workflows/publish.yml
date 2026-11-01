@@ -37,7 +37,7 @@ jobs:
       - name: Run tests
         run: python -m unittest discover -s tests -v
       - name: Test chart calculations
-        run: node --test tests/test_axis.mjs tests/test_marimekko.mjs tests/test_horizon.mjs tests/test_paired_change.mjs tests/test_upset.mjs tests/test_raincloud.mjs
+        run: node --test tests/test_axis.mjs tests/test_marimekko.mjs tests/test_horizon.mjs tests/test_paired_change.mjs tests/test_upset.mjs tests/test_raincloud.mjs tests/test_bump.mjs tests/test_lasagna.mjs tests/test_box.mjs tests/test_histogram.mjs tests/test_nice_axes.mjs tests/test_waterfall.mjs tests/test_bullet.mjs tests/test_sequence.mjs tests/test_ridgeline.mjs
       - name: Build wheel and source archive
         run: python -m build
       - name: Check PyPI metadata and README
@@ -49,6 +49,7 @@ jobs:
           from zipfile import ZipFile
           with ZipFile(next(Path('dist').glob('*.whl'))) as wheel:
               files = wheel.namelist()
+              assert 'streamlit_net_bars/frontend/axes.js' in files
               assert 'streamlit_interactive_charts/__init__.py' in files
               assert 'streamlit_interactive_charts/upset.py' in files
               assert 'streamlit_net_bars/frontend/chart.js' in files
@@ -63,6 +64,31 @@ jobs:
               assert 'streamlit_net_bars/frontend/upset.css' in files
               assert 'streamlit_net_bars/frontend/raincloud.js' in files
               assert 'streamlit_net_bars/frontend/raincloud.css' in files
+              assert 'streamlit_net_bars/frontend/bump.js' in files
+              assert 'streamlit_net_bars/frontend/bump.css' in files
+              assert 'streamlit_net_bars/frontend/lasagna.js' in files
+              assert 'streamlit_net_bars/frontend/lasagna.css' in files
+              assert 'streamlit_net_bars/frontend/box.js' in files
+              assert 'streamlit_net_bars/frontend/box.css' in files
+              assert 'streamlit_net_bars/frontend/histogram.js' in files
+              assert 'streamlit_net_bars/frontend/histogram.css' in files
+              assert 'streamlit_net_bars/frontend/waterfall.js' in files
+              assert 'streamlit_net_bars/frontend/waterfall.css' in files
+              assert 'streamlit_net_bars/frontend/bullet.js' in files
+              assert 'streamlit_net_bars/frontend/bullet.css' in files
+              assert 'streamlit_net_bars/frontend/sequence.js' in files
+              assert 'streamlit_net_bars/frontend/sequence.css' in files
+              assert 'streamlit_net_bars/frontend/distribution.js' in files
+              assert 'streamlit_net_bars/frontend/ridgeline.js' in files
+              assert 'streamlit_net_bars/frontend/ridgeline.css' in files
+              assert 'streamlit_interactive_charts/ridgeline.py' in files
+              assert 'streamlit_interactive_charts/bullet.py' in files
+              assert 'streamlit_interactive_charts/sequence.py' in files
+              assert 'streamlit_interactive_charts/waterfall.py' in files
+              assert 'streamlit_interactive_charts/histogram.py' in files
+              assert 'streamlit_interactive_charts/box.py' in files
+              assert 'streamlit_interactive_charts/lasagna.py' in files
+              assert 'streamlit_interactive_charts/bump.py' in files
               assert 'streamlit_interactive_charts/raincloud.py' in files
               assert any(f.endswith('.dist-info/licenses/LICENSE') for f in files)
           PY
